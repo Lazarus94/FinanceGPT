@@ -1,0 +1,60 @@
+openapi: 3.1.0
+info:
+  title: Market Data API
+  version: 1.0.0
+  description: >
+    Minimal endpoint that lets a GPT fetch the most recent price quote
+    for a given equity or ETF symbol.
+
+servers:
+  - url: https://api.example.com   # ← change to your actual domain or serverless URL
+
+paths:
+  /quote:
+    get:
+      summary: Latest price for a symbol
+      operationId: getQuote
+      parameters:
+        - in: query
+          name: symbol
+          required: true
+          schema:
+            type: string
+            example: AAPL
+          description: Ticker symbol (e.g., AAPL, MSFT, SPY)
+      responses:
+        '200':
+          description: Successful response with a price quote
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+        '400':
+          description: Missing or invalid symbol parameter
+        '404':
+          description: Symbol not found
+
+components:
+  schemas:
+    Quote:
+      type: object
+      required: [symbol, price, currency, timestamp]
+      properties:
+        symbol:
+          type: string
+          description: Ticker symbol queried
+          example: AAPL
+        price:
+          type: number
+          format: double
+          description: Most recent traded price
+          example: 213.64
+        currency:
+          type: string
+          description: ISO 4217 currency code
+          example: USD
+        timestamp:
+          type: string
+          format: date-time
+          description: Time the quote was retrieved (ISO 8601)
+          example: "2025-07-06T14:32:00Z"
